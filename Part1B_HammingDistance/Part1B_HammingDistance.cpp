@@ -12,6 +12,7 @@ int findStringDifferences(std::string x, std::string y) {
 	return differences;
 }
 
+//Getting two DNA strings from input, and using find differences to get the hamming distance and outputting it for user
 int main()
 {
 	// DNA Strings
