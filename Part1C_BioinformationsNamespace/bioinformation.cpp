@@ -6,6 +6,9 @@
 
 namespace bioinformation {
 
+	std::string dna1;
+	std::string dna2;
+
 	// Takes in a string to validate, if all characters are DNA types return true, otherwise false
 	bool validateDnaString(std::string dnaString) {
 		for (char letter : dnaString) {
@@ -22,6 +25,10 @@ namespace bioinformation {
 		for (const auto& [key, value] : map) {
 			std::cout << key << ": " << value << " ";
 		}
+	}
+
+	void outputHammeringDistance() {
+		std::cout << "Hamming distance between DNA strings is: " << findStringDifferences(dna1, dna2);
 	}
 
 	// Takes in a DNA string, creates a map nucleotides, and iterates through each character in param string to sort nucleotide types
@@ -59,18 +66,17 @@ namespace bioinformation {
 		return differences;
 	}
 
-	//Getting two DNA strings from input, and using find differences to get the hamming distance and outputting it for user
+	//Getting two DNA strings from input, and storing it in string variables for namespace
 	void getDna()
 	{
-		// DNA Strings
-		std::string firstDna;
-		std::string secondDna;
-
-		std::cout << "Please enter in two DNA strings of nucleotides to find the hamming distance: ";
-		std::cin >> firstDna;
-		std::cout << "Enter second DNA strings of nucleotides: ";
-		std::cin >> secondDna;
-
-		std::cout << "Hamming distance between DNA strings is: " << findStringDifferences(firstDna, secondDna);
+		do {
+			std::cout << "Please enter in two DNA strings of nucleotides: ";
+			std::cin >> dna1;
+			std::cout << "Enter second DNA strings of nucleotides: ";
+			std::cin >> dna2;
+			if (!validateDnaString(dna1) || !validateDnaString(dna2)) {
+				std::cout << "Sorry, please enter the correct format for DNA strings. (Adenine(A), Thymine(T), Cytosine(C), Guanine(G)) Only enter the four letters. \n";
+			}
+		} while (!validateDnaString(dna1) || !validateDnaString(dna2));
 	}
 }
