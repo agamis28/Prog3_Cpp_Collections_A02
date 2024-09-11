@@ -1,7 +1,10 @@
 #include <iostream>
+#include <string>
+#include "bioinformation.hpp"
+
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	bioinformation::getDna();
 }
 
