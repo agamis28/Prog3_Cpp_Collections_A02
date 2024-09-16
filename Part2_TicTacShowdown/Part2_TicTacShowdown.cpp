@@ -2,7 +2,9 @@
 #include <vector>
 #include <string>
 
-void updateBoard(std::string& move) {
+void clearCin() {
+	std::cin.clear();
+	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
 // Check if a string contains a certain character, returns false if it does not contain it
@@ -54,9 +56,8 @@ bool isValidMove(std::string& move) {
 	return true;
 }
 
-bool isPositionAvaiable(std::vector<std::vector<char>>& board, std::string& move) {
-	int row;
-	int column;
+int getRow(std::string& move) {
+	int row = NULL;
 
 	// Setting row selected
 	if (containsChar(move, 'a')) {
@@ -69,6 +70,12 @@ bool isPositionAvaiable(std::vector<std::vector<char>>& board, std::string& move
 		row = 2;
 	}
 
+	return row;
+}
+
+int getColumn(std::string& move) {
+	int column = NULL;
+
 	// Setting column selected
 	if (containsChar(move, '1')) {
 		column = 0;
@@ -80,11 +87,21 @@ bool isPositionAvaiable(std::vector<std::vector<char>>& board, std::string& move
 		column = 2;
 	}
 
+	return column;
+}
+
+// Check if inputted position is available in vector, if not available return false
+bool isPositionAvaiable(std::vector<std::vector<char>>& board, std::string& move) {
+	int row = getRow(move);
+	int column = getColumn(move);
+
 	for (int i = 0; i < board.size(); i++) {
 		if (row == i) {
-			return board[i][column] == ' ';
+			return board[i][column] == ' '; // Returns true if the board position is ' ', else returns false
 		}
 	}
+
+	return false;
 }
 
 void displayBoard(std::vector<std::vector<char>> board) {
@@ -118,13 +135,6 @@ int main()
 	std::cout << "You are X. and the computer is O!\n\n";
 	std::cout << "Enter your move in rows and columns (a, b, c)(1, 2, 3). Example: (b3)\n\n";
 
-	displayBoard(board);
-
-	std::cout << "(X) What is your move: ";
-	std::cin >> currentMove;
-
-	std::cout << isValidMove(currentMove);
-
 	// Keep calling function till any win variable is true
 	do {
 		// Keep calling if current move is not valid
@@ -134,9 +144,23 @@ int main()
 			std::cout << "(X) What is your move: ";
 			std::cin >> currentMove;
 
-
+			if (!isValidMove(currentMove)) {
+				std::cout << "Invalid move. Try Again.";
+			}
+			if (!isPositionAvaiable(board, currentMove)) {
+				std::cout << "Sorry that position was taken. Try Again.";
+			}
+			clearCin();
 		} while (!isValidMove(currentMove));
 
-		updateBoard();
+		// Update board
+		board[getRow(currentMove)][getColumn(currentMove)] = 'X';
+
+		// if someone won
+
+		// Comp move
+
+		// if someone won
+
 	} while (!playerWin && !compWin);
 }
