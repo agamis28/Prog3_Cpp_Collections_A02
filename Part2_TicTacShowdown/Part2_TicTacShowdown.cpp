@@ -90,7 +90,7 @@ int getColumn(std::string& move) {
 	return column;
 }
 
-// Check if inputted position is available in vector, if not available return false
+// Check if inputted position is available in vector board, if not available return false
 bool isPositionAvaiable(std::vector<std::vector<char>>& board, std::string& move) {
 	int row = getRow(move);
 	int column = getColumn(move);
@@ -104,8 +104,19 @@ bool isPositionAvaiable(std::vector<std::vector<char>>& board, std::string& move
 	return false;
 }
 
-void displayBoard(std::vector<std::vector<char>> board) {
-	std::cout << board[0][0];
+// Check if random position is available in vector board, if not available return false
+bool compIsPositionAvailable(std::vector<std::vector<char>>& board, std::vector<int>& compMove) {
+	for (int i = 0; i < board.size(); i++) {
+		if (compMove[0] == i) {
+			return board[i][compMove[1]] == ' '; // Returns true if the board position is ' ', else returns false
+		}
+	}
+
+	return false;
+}
+
+// Displays board to user by looping through vector of vectors, and outputting each char in vector as well as lines inbetween each. Also displaying grid position names
+void displayBoard(std::vector<std::vector<char>>& board) {
 	for (int i = 0; i < board.size(); i++) {
 		if (i == 0) {
 			std::cout << "  1 2 3\n";
@@ -122,12 +133,70 @@ void displayBoard(std::vector<std::vector<char>> board) {
 	}
 }
 
+bool checkIfWon(std::vector<std::vector<char>>& board, char player) {
+
+	// Checking if win state horizontal lines, return true
+	if (board[0][0] == player && board[0][1] == player && board[0][2] == player) {
+		return true;
+	}
+	if (board[1][0] == player && board[1][1] == player && board[1][2] == player) {
+		return true;
+	}
+	if (board[2][0] == player && board[2][1] == player && board[2][2] == player) {
+		return true;
+	}
+
+	// Checking if win state vertical lines, return true
+	if (board[0][0] == player && board[1][0] == player && board[2][0] == player) {
+		return true;
+	}
+	if (board[0][1] == player && board[1][1] == player && board[2][1] == player) {
+		return true;
+	}
+	if (board[0][2] == player && board[1][2] == player && board[2][2] == player) {
+		return true;
+	}
+
+	// Checking if win state diagonal lines, return true
+	if (board[0][0] == player && board[1][1] == player && board[2][2] == player) {
+		return true;
+	}
+	if (board[0][2] == player && board[1][1] == player && board[2][0] == player) {
+		return true;
+	}
+
+	return false;
+}
+
+bool checkIfTie(const std::vector<std::vector<char>>& board) {
+	for (const auto& row : board) {
+		for (char column : row) {
+			if (column == ' ') {
+				return false; // Return false immediately if a space is found
+			}
+		}
+	}
+	return true; // Return true if no spaces were found
+}
+
+// Picking a random move for computer
+std::vector<int> computerRandomMove() {
+	std::vector<int> computerMove;
+
+	return computerMove = { rand() % (2 - 0 + 1),rand() % (2 - 0 + 1) };
+}
+
 int main()
 {
+	// Adding seed for random number
+	std::srand(time(0));
+
 	// Win Variables
 	bool playerWin = false;
 	bool compWin = false;
+	bool tie = false;
 	std::string currentMove;
+	std::vector<int> computerMove;
 
 	std::vector<std::vector<char>> board(3, std::vector<char>(3, ' '));
 
@@ -135,32 +204,61 @@ int main()
 	std::cout << "You are X. and the computer is O!\n\n";
 	std::cout << "Enter your move in rows and columns (a, b, c)(1, 2, 3). Example: (b3)\n\n";
 
+	displayBoard(board);
+
 	// Keep calling function till any win variable is true
 	do {
 		// Keep calling if current move is not valid
 		do {
-			displayBoard(board);
-
 			std::cout << "(X) What is your move: ";
 			std::cin >> currentMove;
 
 			if (!isValidMove(currentMove)) {
-				std::cout << "Invalid move. Try Again.";
+				std::cout << "\nInvalid move. Try Again.\n\n";
 			}
-			if (!isPositionAvaiable(board, currentMove)) {
-				std::cout << "Sorry that position was taken. Try Again.";
+			if (isValidMove(currentMove) && !isPositionAvaiable(board, currentMove)) {
+				std::cout << "\nSorry that position was taken. Try Again.\n\n";
 			}
 			clearCin();
-		} while (!isValidMove(currentMove));
+		} while (!isValidMove(currentMove) || !isPositionAvaiable(board, currentMove));
 
 		// Update board
 		board[getRow(currentMove)][getColumn(currentMove)] = 'X';
 
-		// if someone won
+		displayBoard(board);
 
-		// Comp move
+		// Check if player won
+		playerWin = checkIfWon(board, 'X');
+		if (playerWin) {
+			std::cout << "You Won!";
+			break;
+		}
 
-		// if someone won
+		// Check if it is a tie
+		tie = checkIfTie(board);
+		if (tie) {
+			std::cout << "It's a tie!";
+			break;
+		}
 
-	} while (!playerWin && !compWin);
+		// Computer Move, keep setting move untill position is available
+		do {
+			computerMove = computerRandomMove();
+		} while (!compIsPositionAvailable(board, computerMove));
+
+		// Update board
+		board[computerMove[0]][computerMove[1]] = 'O';
+
+		std::cout << "Computer made its move!\n";
+
+		displayBoard(board);
+
+		// Check if computer won
+		compWin = checkIfWon(board, 'O');
+		if (compWin) {
+			std::cout << "Computer Won!";
+			break;
+		}
+
+	} while (!playerWin && !compWin && !tie);
 }
